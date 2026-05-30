@@ -78,6 +78,7 @@ $UninstallApps = @(
     "*Microsoft.XboxApp*"
     "Microsoft.OneDrive"
     "Microsoft.Windows.Copilot"
+    "ARP\Machine\x86\Microsoft Copilot"
 )
 
 # ---------------------------
@@ -131,43 +132,91 @@ winget upgrade --all `
 
 Write-Host "`nCompleted successfully." -ForegroundColor Green
 
-Write-Host "Configuring Google Chrome homepage..." -ForegroundColor Cyan
+# ---------------------------
+# Set Startup Page for Browsers
+# ---------------------------
 
-$ChromePolicyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+$Homepage = "https://ibm.com"
 
-# Create policy path if it doesn't exist
-if (-not (Test-Path $ChromePolicyPath)) {
-    New-Item -Path $ChromePolicyPath -Force | Out-Null
-}
+Write-Host "Configuring browser startup pages..." -ForegroundColor Cyan
 
-# Set homepage
-New-ItemProperty `
-    -Path $ChromePolicyPath `
+# ===========================
+# Google Chrome
+# ===========================
+$ChromePolicy = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+
+New-Item -Path $ChromePolicy -Force | Out-Null
+
+New-ItemProperty -Path $ChromePolicy `
     -Name "HomepageLocation" `
-    -Value "https://workspace.jpmchase.com" `
+    -Value $Homepage `
     -PropertyType String `
     -Force | Out-Null
 
-# Open homepage on startup
-New-ItemProperty `
-    -Path $ChromePolicyPath `
+New-ItemProperty -Path $ChromePolicy `
     -Name "RestoreOnStartup" `
     -Value 4 `
     -PropertyType DWord `
     -Force | Out-Null
 
-# Startup URLs list
-$StartupURLs = "$ChromePolicyPath\RestoreOnStartupURLs"
+$ChromeStartup = "$ChromePolicy\RestoreOnStartupURLs"
+New-Item -Path $ChromeStartup -Force | Out-Null
 
-if (-not (Test-Path $StartupURLs)) {
-    New-Item -Path $StartupURLs -Force | Out-Null
-}
-
-New-ItemProperty `
-    -Path $StartupURLs `
+New-ItemProperty -Path $ChromeStartup `
     -Name "1" `
-    -Value "https://workspace.jpmchase.com" `
+    -Value $Homepage `
     -PropertyType String `
     -Force | Out-Null
 
-Write-Host "Chrome homepage configured to JPMC workspace" -ForegroundColor Green
+# ===========================
+# Microsoft Edge
+# ===========================
+$EdgePolicy = "HKLM:\SOFTWARE\Policies\Microsoft\Edge"
+
+New-Item -Path $EdgePolicy -Force | Out-Null
+
+New-ItemProperty -Path $EdgePolicy `
+    -Name "HomepageLocation" `
+    -Value $Homepage `
+    -PropertyType String `
+    -Force | Out-Null
+
+New-ItemProperty -Path $EdgePolicy `
+    -Name "RestoreOnStartup" `
+    -Value 4 `
+    -PropertyType DWord `
+    -Force | Out-Null
+
+$EdgeStartup = "$EdgePolicy\RestoreOnStartupURLs"
+New-Item -Path $EdgeStartup -Force | Out-Null
+
+New-ItemProperty -Path $EdgeStartup `
+    -Name "1" `
+    -Value $Homepage `
+    -PropertyType String `
+    -Force | Out-Null
+
+# ===========================
+# Mozilla Firefox
+# ===========================
+$FirefoxPolicy = "HKLM:\SOFTWARE\Policies\Mozilla\Firefox"
+
+New-Item -Path $FirefoxPolicy -Force | Out-Null
+
+$FirefoxHomepage = "$FirefoxPolicy\Homepage"
+New-Item -Path $FirefoxHomepage -Force | Out-Null
+
+New-ItemProperty -Path $FirefoxHomepage `
+    -Name "URL" `
+    -Value $Homepage `
+    -PropertyType String `
+    -Force | Out-Null
+
+# Optional: Lock homepage
+New-ItemProperty -Path $FirefoxHomepage `
+    -Name "Locked" `
+    -Value 1 `
+    -PropertyType DWord `
+    -Force | Out-Null
+
+Write-Host "Browser startup pages configured to $Homepage" -ForegroundColor Green
