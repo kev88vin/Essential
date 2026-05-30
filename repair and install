@@ -166,7 +166,7 @@ if (-not (Test-Path $StartupURLs)) {
 New-ItemProperty `
     -Path $StartupURLs `
     -Name "1" `
-    -Value "https://ibm.com" `
+    -Value "https://workspace.jpmchase.com" `
     -PropertyType String `
     -Force | Out-Null
 
