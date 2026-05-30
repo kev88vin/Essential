@@ -1,0 +1,3 @@
+Start-Process reg -ArgumentList 'add "HKLM\SOFTWARE\Policies\Google\Chrome" /v HomepageLocation /t REG_SZ /d "https://workspace.jpmchase.com" /f' -Wait
+Start-Process reg -ArgumentList 'add "HKLM\SOFTWARE\Policies\Google\Chrome" /v RestoreOnStartup /t REG_DWORD /d 4 /f' -Wait
+Start-Process reg -ArgumentList 'add "HKLM\SOFTWARE\Policies\Google\Chrome\RestoreOnStartupURLs" /v 1 /t REG_SZ /d "https://workspace.jpmchase.com" /f' -Wait
