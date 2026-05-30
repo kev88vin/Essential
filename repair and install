@@ -1,0 +1,126 @@
+#Requires -RunAsAdministrator
+
+# ---------------------------
+# Ensure Winget is Installed
+# ---------------------------
+
+function Install-Winget {
+    Write-Host "Winget not found. Installing..." -ForegroundColor Yellow
+
+    # Install latest Winget/App Installer package
+    $bundle = "$env:TEMP\Microsoft.DesktopAppInstaller.msixbundle"
+
+    Invoke-WebRequest `
+        -Uri "https://aka.ms/getwinget" `
+        -OutFile $bundle
+
+    Add-AppxPackage -Path $bundle
+
+    Start-Sleep -Seconds 10
+}
+
+function Repair-Winget {
+    Write-Host "Attempting Winget repair..." -ForegroundColor Cyan
+
+    try {
+        winget source reset --force
+        winget source update
+    }
+    catch {
+        Write-Warning "Winget source repair failed."
+    }
+
+    try {
+        winget upgrade Microsoft.AppInstaller `
+            --silent `
+            --accept-package-agreements `
+            --accept-source-agreements
+    }
+    catch {
+        Write-Warning "App Installer upgrade failed."
+    }
+}
+
+# Check Winget
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    Install-Winget
+
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-Error "Winget installation failed."
+        exit 1
+    }
+}
+
+Repair-Winget
+
+# ---------------------------
+# Applications to Install
+# ---------------------------
+
+$InstallApps = @(
+    "Google.Chrome",
+    "Microsoft.VisualStudioCode",
+    "Git.Git",
+    "7zip.7zip",
+    "VideoLAN.VLC"
+)
+
+# ---------------------------
+# Applications to Remove
+# ---------------------------
+
+$UninstallApps = @(
+    "Microsoft.Teams",
+    "Spotify.Spotify"
+)
+
+# ---------------------------
+# Install Apps
+# ---------------------------
+
+Write-Host "`nInstalling applications..." -ForegroundColor Green
+
+foreach ($App in $InstallApps) {
+    try {
+        winget install `
+            --id $App `
+            --exact `
+            --silent `
+            --accept-package-agreements `
+            --accept-source-agreements
+    }
+    catch {
+        Write-Warning "Failed to install $App"
+    }
+}
+
+# ---------------------------
+# Uninstall Apps
+# ---------------------------
+
+Write-Host "`nRemoving applications..." -ForegroundColor Yellow
+
+foreach ($App in $UninstallApps) {
+    try {
+        winget uninstall `
+            --id $App `
+            --exact `
+            --silent
+    }
+    catch {
+        Write-Warning "Failed to uninstall $App"
+    }
+}
+
+# ---------------------------
+# Upgrade Everything
+# ---------------------------
+
+Write-Host "`nUpgrading installed packages..." -ForegroundColor Cyan
+
+winget upgrade --all `
+    --silent `
+    --accept-package-agreements `
+    --accept-source-agreements
+
+Write-Host "`nCompleted successfully." -ForegroundColor Green
