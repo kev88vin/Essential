@@ -136,7 +136,7 @@ Write-Host "`nCompleted successfully." -ForegroundColor Green
 # Set Startup Page for Browsers
 # ---------------------------
 
-$Homepage = "https://ibm.com"
+$Homepage = "https://workspace.jpmchase.com"
 
 Write-Host "Configuring browser startup pages..." -ForegroundColor Cyan
 
