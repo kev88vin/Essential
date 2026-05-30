@@ -1,0 +1,58 @@
+$silent = $true
+$acceptSourceAgreements = $true
+$acceptPackageAgreements = $true
+
+# List of applications to install (using IDs)
+$applications = @(
+   "Google.Chrome",
+   "Mozilla.Firefox",
+   "Microsoft.VisualStudioCode",
+    "Citrix.Workspace",
+     "Zoom.Zoom"
+)
+
+# Loop through the applications
+foreach ($app in $applications) {
+   try {
+       # Construct the winget install command
+       $command = "winget install --id $app"
+
+       # Add silent install and agreement options if specified
+       if ($silent) {
+           $command += " --silent"
+       }
+       if ($acceptSourceAgreements) {
+           $command += " --accept-source-agreements"
+       }
+       if ($acceptPackageAgreements) {
+           $command += " --accept-package-agreements"
+       }
+
+       # Execute the command
+       Write-Host "Installing: $app"
+       Invoke-Expression $command
+
+       # Check for errors
+       if ($LASTEXITCODE -ne 0) {
+           Write-Error "Installation of $app failed with exit code: $LASTEXITCODE"
+       }
+   }
+   catch {
+       #Write-Error "Error installing $app: $($_.Exception.Message)"
+   }
+}
+
+Write-Host "Installation complete."
+
+$UninstallList = @(
+   "PowerToys",
+   "7-Zip.7-Zip"
+    "Microsoft.OneDrive"
+    "Microsoft.Windows.Copilot"
+     "*Microsoft.XboxApp*"
+
+)
+
+foreach ($appName in $UnistallList) {
+   winget uninstall --name $appName --silent
+}
