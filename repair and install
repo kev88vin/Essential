@@ -60,9 +60,11 @@ Repair-Winget
 $InstallApps = @(
     "Google.Chrome",
     "Microsoft.VisualStudioCode",
-    "Git.Git",
+    "Zoom.Zoom",
     "7zip.7zip",
     "VideoLAN.VLC"
+    "Citrix.Workspace"
+    "Mozilla.Firefox"
 )
 
 # ---------------------------
@@ -72,13 +74,17 @@ $InstallApps = @(
 $UninstallApps = @(
     "Microsoft.Teams",
     "Spotify.Spotify"
+    "PowerToys"
+    "*Microsoft.XboxApp*"
+    "Microsoft.OneDrive"
+    "Microsoft.Windows.Copilot"
 )
 
 # ---------------------------
 # Install Apps
 # ---------------------------
 
-Write-Host "`nInstalling applications..." -ForegroundColor Green
+Write-Host "unInstalling applications..." -ForegroundColor Green
 
 foreach ($App in $InstallApps) {
     try {
