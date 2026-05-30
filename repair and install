@@ -130,3 +130,44 @@ winget upgrade --all `
     --accept-source-agreements
 
 Write-Host "`nCompleted successfully." -ForegroundColor Green
+
+Write-Host "Configuring Google Chrome homepage..." -ForegroundColor Cyan
+
+$ChromePolicyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome"
+
+# Create policy path if it doesn't exist
+if (-not (Test-Path $ChromePolicyPath)) {
+    New-Item -Path $ChromePolicyPath -Force | Out-Null
+}
+
+# Set homepage
+New-ItemProperty `
+    -Path $ChromePolicyPath `
+    -Name "HomepageLocation" `
+    -Value "https://workspace.jpmchase.com" `
+    -PropertyType String `
+    -Force | Out-Null
+
+# Open homepage on startup
+New-ItemProperty `
+    -Path $ChromePolicyPath `
+    -Name "RestoreOnStartup" `
+    -Value 4 `
+    -PropertyType DWord `
+    -Force | Out-Null
+
+# Startup URLs list
+$StartupURLs = "$ChromePolicyPath\RestoreOnStartupURLs"
+
+if (-not (Test-Path $StartupURLs)) {
+    New-Item -Path $StartupURLs -Force | Out-Null
+}
+
+New-ItemProperty `
+    -Path $StartupURLs `
+    -Name "1" `
+    -Value "https://ibm.com" `
+    -PropertyType String `
+    -Force | Out-Null
+
+Write-Host "Chrome homepage configured to JPMC workspace" -ForegroundColor Green
