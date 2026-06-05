@@ -5,3 +5,4 @@ Zoom.Zoom
 VideoLAN.VLC
 Citrix.Workspace
 Mozilla.Firefox
+Bitdefender.Bitdefender
