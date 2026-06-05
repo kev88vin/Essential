@@ -17,7 +17,7 @@ function Reset-WingetSources {
     Write-Log "Resetting Winget sources..."
 
     try {
-
+        winget upgrade --all
         winget source reset --force
         winget source update
 
